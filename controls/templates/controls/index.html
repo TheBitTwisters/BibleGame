@@ -171,15 +171,15 @@
                         <div class="card-body">
                             <form action="/controls/timer/" method="post">
                                 <div class="input-group mb-3 input-group-sm">
-                                    <input type="number" class="form-control" name="time">
+                                    <input type="number" class="form-control" name="time" value="{{play_game.play_time}}">
                                     <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary" type="submit">Update timer</button>
+                                        <button class="btn btn-outline-secondary" type="submit">Update</button>
                                     </div>
                                 </div>
                             </form>
                             <form action="/controls/event/" method="post">
-                                <button class="btn btn-outline-success" type="submit" name="event" value="countdown">Start timer</button>
-                                <button class="btn btn-outline-danger" type="submit" name="event" value="countstop">Stop timer</button>
+                                <button class="btn btn-outline-success" type="submit" name="event" value="countdown">Start</button>
+                                <button class="btn btn-outline-danger" type="submit" name="event" value="countstop">Stop</button>
                             </form>
                         </div>
                     </div>
