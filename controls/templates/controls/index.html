@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Bible Game Controller</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% load staticfiles %}
+        <link rel="icon" href="{% static 'favicon.ico' %}">
+        <link rel="stylesheet" href="{% static 'plugins/bootstrap/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'plugins/fontawesome/css/all.css' %}">
+        <script src="{% static 'plugins/jquery/jquery-3.3.1.min.js' %}"></script>
+        <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+        <script type="text/javascript">
+            $(function() {
+                $('.view-button').on('change', function() {
+                    $(this).closest('form').submit();
+                });
+            });
+        </script>
+
+    </head>
+    <body>
+        <div class="container-fluid py-3">
+            <div class="row">
+                <div class="col-3">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Game
+                        </div>
+                        <div class="card-body">
+                            <form action="/controls/play/" method="post">
+                                <div class="input-group">
+                                    <select class="custom-select" id="input-game-select" name="game_id" required>
+                                        <option value="0">Select game</option>
+{% for game in games %}
+{% if play_game == game %}
+                                        <option value="{{game.id}}" selected>{{game.date|date:'F d'}}</option>
+{% else %}
+                                        <option value="{{game.id}}">{{game.date|date:'F d'}}</option>
+{% endif %}
+{% endfor %}
+                                    </select>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-success" type="submit">Play</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Teams
+                        </div>
+                        <div class="card-body pb-0">
+{% for team in teams %}
+                            <div class="card text-light mb-4">
+                                <div class="card-header bg-success py-2">
+                                    <div class="media">
+                                        <div class="media-body">
+                                            {{team.name}}
+                                        </div>
+                                        <div class="ml-3">
+                                            {{team.score}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-2">
+                                    <form action="/controls/team_score/" method="post">
+                                    <div class="input-group input-group-sm">
+                                        <input type="hidden" name="team_id" value="{{team.id}}">
+                                        <input type="number" class="form-control" name="score">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="submit">Add score</button>
+                                        </div>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+{% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Question
+                            <span class="float-right">{{play_question.points}} Points</span>
+                        </div>
+                        <div class="card-body">
+                            <form action="/controls/question/" method="post">
+                                <div class="input-group">
+                                    <select class="custom-select" id="input-question-select" name="question_id" required>
+                                        <option value="0">Select question</option>
+{% for question in questions %}
+{% if play_game.play_question == question.id %}
+                                        <option value="{{question.id}}" selected>{{question}}</option>
+{% else %}
+                                        <option value="{{question.id}}">{{question}}</option>
+{% endif %}
+{% endfor %}
+                                    </select>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-success" type="submit">Select</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Choices
+                        </div>
+                        <div class="card-body">
+                            <form action="/controls/choice/" method="post">
+{% for choice in choices %}
+                                <button class="btn btn-block {% if choice.mark %}btn-info{% else %}btn-outline-info{% endif %} text-left"
+                                    type="submit" name="choice_id" value="{{choice.id}}">
+                                    <div class="media mb-0">
+                                        <div class="media-body align-self-center">{{choice.choice_text}}</div>
+                                        <div class="ml-3 align-self-center">{{choice.score}}</div>
+                                    </div>
+                                </button>
+{% endfor %}
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            View
+                        </div>
+                        <div class="card-body pb-0">
+                            <form action="/controls/view/" method="post">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <button class="btn btn-block mb-4 py-3 {% if play_game.play_view == 'main' %}btn-info{% else %}btn-outline-info{% endif %}"
+                                            type="submit" name="view" value="main">
+                                            Main
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-block mb-4 py-3 {% if play_game.play_view == 'teams' %}btn-info{% else %}btn-outline-info{% endif %}"
+                                            type="submit" name="view" value="teams">
+                                            Teams
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-block mb-4 py-3 {% if play_game.play_view == 'question' %}btn-info{% else %}btn-outline-info{% endif %}"
+                                            type="submit" name="view" value="question">
+                                            Question
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-block mb-4 py-3 {% if play_game.play_view == 'timer' %}btn-info{% else %}btn-outline-info{% endif %}"
+                                            type="submit" name="view" value="timer">
+                                            Timer
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Timer
+                        </div>
+                        <div class="card-body">
+                            <form action="/controls/timer/" method="post">
+                                <div class="input-group mb-3 input-group-sm">
+                                    <input type="number" class="form-control" name="time">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="submit">Update timer</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <form action="/controls/event/" method="post">
+                                <button class="btn btn-outline-success" type="submit" name="event" value="countdown">Start timer</button>
+                                <button class="btn btn-outline-danger" type="submit" name="event" value="countstop">Stop timer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
