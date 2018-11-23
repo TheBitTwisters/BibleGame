@@ -19,7 +19,8 @@
                 teams: false,
                 question: false,
                 time: 0,
-                time_count: false
+                time_count: false,
+                buzz_time: 0
             }
 
             $(function(){
@@ -69,6 +70,12 @@
                     case 'timer':
                         renderTimer();
                         break;
+                    case 'wrong':
+                        renderWrong();
+                        break;
+                    case 'buzzer':
+                        renderBuzzer();
+                        break;
                     case 'main':
                     default:
                         renderMain();
@@ -100,7 +107,69 @@
                         data.time_count = true;
                         countdown();
                     }
+                } else {
+                    data.time_count = false;
                 }
+
+                if (data.view == 'buzzer') {
+                    if (data.buzz_time > 0) return;
+                    $.each(data.teams, function(index, team) {
+                        if (!data.buzz_time) data.buzz_time = team.buzz_time;
+                        if (team.buzz_time > 0 && team.buzz_time <= data.buzz_time)
+                            data.buzz_time = team.buzz_time;
+                    });
+                    if (data.buzz_time > 0) {
+                        $.each(data.teams, function(index, team) {
+                            if (team.buzz_time == data.buzz_time)
+                                renderBuzzerTeam(team);
+                        });
+                    }
+                }
+            }
+
+            function renderBuzzer()
+            {
+                data.buzz_time = 0;
+                game_title = '';
+                if (data.game) game_title = data.game.title;
+                div = '<div class="h-100 row align-items-center justify-content-center">' +
+                        '<div class="col-11">' +
+                            '<div id="buzzer-deck" class="card-deck">' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                game_card = '<div class="card bg-primary text-center text-light p-5">' +
+                                '<img class="card-img" src="{% static 'img/adventist-en-tm-centered--white.png' %}" alt="">' +
+                                '<div class="card-body">' +
+                                    '<div class="display-4">BIBLE GAME</div>' +
+                                    '<h1 class="mb-0">' +
+                                        game_title
+                                    '</h1>' +
+                                '</div>' +
+                            '</div>';
+                team_card = '<div class="card bg-white">' +
+                                '<div id="buzzer-team" class="card-body d-flex align-items-center justify-content-center"></div>' +
+                            '</div>';
+                if (data.teams) {
+                    $('.content').empty();
+                    $('.content').append(div);
+                    $('#buzzer-deck').append(game_card);
+                    $('#buzzer-deck').append(team_card);
+                } else {
+                    renderMain();
+                }
+            }
+            function renderBuzzerTeam(team)
+            {
+                if (!team) return;
+                button = '<button class="btn btn-info p-5" type="button">' +
+                        '<div class="h2 mb-0">' +
+                            team.name +
+                        '</div>' +
+                    '</button>';
+                $('#buzzer-team').append(button);
+
+                $("#audio-correct")[0].play();
             }
 
             function renderTeams()
@@ -261,15 +330,49 @@
             }
             function countdown()
             {
-                if (!data.time_count) return;
+                if (!data.time_count || data.view != 'timer') return;
 
                 data.time--;
                 $('#timer').html(data.time);
 
                 if (data.time > 0) $("#audio-tick")[0].play();
-                else $("#audio-wrong")[0].play();
+                else $("#audio-timer-finish")[0].play();
 
                 if (data.time > 0) setTimeout(countdown, 1000);
+            }
+
+            function renderWrong()
+            {
+                game_title = '';
+                if (data.game) game_title = data.game.title;
+                div = '<div class="h-100 row align-items-center justify-content-center">' +
+                        '<div class="col-11">' +
+                            '<div id="wrong-deck" class="card-deck">' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                game_card = '<div class="card bg-primary text-center text-light p-5">' +
+                                '<img class="card-img" src="{% static 'img/adventist-en-tm-centered--white.png' %}" alt="">' +
+                                '<div class="card-body">' +
+                                    '<div class="display-4">BIBLE GAME</div>' +
+                                    '<h1 class="mb-0">' +
+                                        game_title
+                                    '</h1>' +
+                                '</div>' +
+                            '</div>';
+                wrong_card = '<div class="card bg-white text-center">' +
+                                '<div class="card-body d-flex align-items-center justify-content-center">' +
+                                    '<h1 class="display-1">' +
+                                        '<i class="fas fa-4x fa-times"></i>'
+                                    '</h1>' +
+                                '</div>' +
+                            '</div>';
+                $('.content').empty();
+                $('.content').append(div);
+                $('#wrong-deck').append(game_card);
+                $('#wrong-deck').append(wrong_card);
+
+                $("#audio-wrong")[0].play();
             }
 
             function renderMain()
@@ -313,5 +416,6 @@
         <audio id="audio-correct" src="{% static 'audio/correct.ogg' %}"></audio>
         <audio id="audio-wrong" src="{% static 'audio/wrong.ogg' %}"></audio>
         <audio id="audio-tick" src="{% static 'audio/tick.ogg' %}"></audio>
+        <audio id="audio-timer-finish" src="{% static 'audio/timer-finish.ogg' %}"></audio>
     </body>
 </html>

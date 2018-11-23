@@ -160,6 +160,18 @@
                                             Timer
                                         </button>
                                     </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-block mb-4 py-3 {% if play_game.play_view == 'wrong' %}btn-info{% else %}btn-outline-info{% endif %}"
+                                            type="submit" name="view" value="wrong">
+                                            Wrong
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-block mb-4 py-3 {% if play_game.play_view == 'buzzer' %}btn-info{% else %}btn-outline-info{% endif %}"
+                                            type="submit" name="view" value="buzzer">
+                                            Buzzer
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>

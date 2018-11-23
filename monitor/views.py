@@ -30,7 +30,7 @@ def check(request):
         response_teams = {}
         index = 0
         for team in teams:
-            append_team = { 'id': team.id, 'name': team.name, 'score': team.score }
+            append_team = { 'id': team.id, 'name': team.name, 'score': team.score, 'buzz_time': team.buzz_time }
             response_teams[index] = append_team
             index += 1
     if question:
