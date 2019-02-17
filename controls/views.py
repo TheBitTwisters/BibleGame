@@ -47,10 +47,11 @@ def view(request):
     view = request.POST.get('view', 'main')
     try:
         game = Game.objects.get(play=True)
-        if view == 'timer':
-            game.play_event = ''
+        game.play_event = ''
         game.play_view = view
         game.save()
+        if view == 'buzzer':
+            Team.objects.filter(game=game).update(buzz_time=0)
     except ObjectDoesNotExist:
         game = None
     return redirect('/controls/')
@@ -60,6 +61,21 @@ def question(request):
     question_id = request.POST.get('question_id', 0)
     try:
         game = Game.objects.filter(play=True).update(play_question=question_id)
+    except ObjectDoesNotExist:
+        game = None
+    return redirect('/controls/')
+
+
+def fails(request):
+    fails = int(request.POST.get('fails', 0))
+    try:
+        game = Game.objects.get(play=True)
+        question = Question.objects.get(id=game.play_question)
+        if fails == 0:
+            question.fails = 0
+        else:
+            question.fails += 1
+        question.save()
     except ObjectDoesNotExist:
         game = None
     return redirect('/controls/')

@@ -86,7 +86,6 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             Question
-                            <span class="float-right">{{play_question.points}} Points</span>
                         </div>
                         <div class="card-body">
                             <form action="/controls/question/" method="post">
@@ -160,10 +159,29 @@
                                             Timer
                                         </button>
                                     </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-block mb-4 py-3 {% if play_game.play_view == 'buzzer' %}btn-info{% else %}btn-outline-info{% endif %}"
+                                            type="submit" name="view" value="buzzer">
+                                            Buzzer
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
                     </div>
+{% if play_question %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Fails
+                        </div>
+                        <div class="card-body">
+                            <form action="/controls/fails/" method="post">
+                                <button class="btn btn-outline-danger" type="submit" name="fails" value="1">Increase</button>
+                                <button class="btn btn-outline-info" type="submit" name="fails" value="0">Reset</button>
+                            </form>
+                        </div>
+                    </div>
+{% endif %}
                     <div class="card mb-4">
                         <div class="card-header">
                             Timer

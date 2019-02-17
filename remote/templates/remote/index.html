@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Bible Game Remote</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% load staticfiles %}
+        <link rel="icon" href="{% static 'favicon.ico' %}">
+        <link rel="stylesheet" href="{% static 'plugins/bootstrap/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'plugins/fontawesome/css/all.css' %}">
+        <script src="{% static 'plugins/jquery/jquery-3.3.1.min.js' %}"></script>
+        <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+        <script type="text/javascript">
+            var data = {
+                team_id: 0,
+                game: false,
+                teams: false,
+            }
+
+            $(function(){
+                renderMain();
+                check();
+            });
+
+            function check()
+            {
+                setTimeout(check, 3000);
+                $.ajax({
+                    url: '/monitor/check/',
+                    type: 'post',
+                    datatype: 'json',
+                    success: function(server_data) {
+                        if (server_data.game) {
+                            data.game = server_data.game;
+                            data.teams = server_data.teams;
+                            changeView();
+                        } else {
+                            data = {
+                                team_id: 0,
+                                game: false,
+                                teams: false
+                            }
+                            renderMain();
+                        }
+                    }
+                });
+            }
+
+            function changeView()
+            {
+                if (data.team_id > 0) return;
+
+                if (data.team_id == 0)
+                    renderTeams();
+                else
+                    renderBuzzer();
+            }
+
+            function renderTeams()
+            {
+                game_title = '';
+                if (data.game) game_title = data.game.title;
+                div = '<div class="h-100 row align-items-center justify-content-center">' +
+                        '<div class="col-11">' +
+                            '<div class="card bg-white text-center">' +
+                                    '<div id="teams" class="card-body">' +
+                                    '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                if (data.teams) {
+                    $('.content').empty();
+                    $('.content').append(div);
+                    $.each(data.teams, function(index, team) {
+                        renderTeam(team);
+                    });
+                } else {
+                    renderMain();
+                }
+            }
+            function renderTeam(team)
+            {
+                if (!team) return;
+                button = '<button class="btn btn-outline-dark btn-block p-4" type="button" ' +
+                        ' onclick="selectTeam('+team.id+')">' +
+                            '<h1 class="mb-0">' +
+                                team.name +
+                            '</h1>'
+                    '</button>';
+                $('#teams').append(button);
+            }
+            function selectTeam(team_id)
+            {
+                data.team_id = team_id;
+                renderBuzzer();
+            }
+
+            function renderBuzzer()
+            {
+                button = '<button class="btn btn-success btn-block w-100 h-100 rounded-0" type="button" ' +
+                            ' onclick="clickBuzzer('+data.team_id+')">' +
+                            '<h1 class="mb-0"><i class="fas fa-4x fa-hand-point-up"></i></h1>'
+                        '</button>';
+                $('.content').empty();
+                $('.content').append(button);
+            }
+            function clickBuzzer(team_id)
+            {
+                $('button').prop('disabled', true);
+
+                $.ajax({
+                    url: '/remote/buzz/',
+                    data: $.param({ team_id: data.team_id }),
+                    type: 'post'
+                });
+            }
+
+            function renderMain()
+            {
+                title = '';
+                if (data.game.title) title = data.game.title;
+                div = '<div class="h-100 row align-items-center justify-content-center">' +
+                        '<div class="col-11">' +
+                            '<div class="card bg-primary text-center text-light">' +
+                                '<img class="card-img" src="{% static 'img/adventist-en-tm-centered--white.png' %}" alt="">' +
+                                '<div class="card-body">' +
+                                    '<h1 class="mb-0">BIBLE GAME</h1>' +
+                                    '<h4 class="mb-0">' +
+                                        title
+                                    '</h4>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                $('.content').empty();
+                $('.content').append(div);
+            }
+        </script>
+
+        <style media="screen">
+            .content
+            {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                z-index: 1040;
+            }
+        </style>
+    </head>
+    <body class="bg-light">
+        <div class="content">
+
+        </div>
+    </body>
+</html>
