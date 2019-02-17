@@ -127,7 +127,55 @@
                                 renderBuzzerTeam(team);
                         });
                     }
+<<<<<<< HEAD
+=======
                 }
+            }
+
+            function renderBuzzer()
+            {
+                data.buzz_time = 0;
+                game_title = '';
+                if (data.game) game_title = data.game.title;
+                div = '<div class="h-100 row align-items-center justify-content-center">' +
+                        '<div class="col-11">' +
+                            '<div id="buzzer-deck" class="card-deck">' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                game_card = '<div class="card bg-primary text-center text-light p-5">' +
+                                '<img class="card-img" src="{% static 'img/adventist-en-tm-centered--white.png' %}" alt="">' +
+                                '<div class="card-body">' +
+                                    '<div class="display-4">BIBLE GAME</div>' +
+                                    '<h1 class="mb-0">' +
+                                        game_title
+                                    '</h1>' +
+                                '</div>' +
+                            '</div>';
+                team_card = '<div class="card bg-white">' +
+                                '<div id="buzzer-team" class="card-body d-flex align-items-center justify-content-center"></div>' +
+                            '</div>';
+                if (data.teams) {
+                    $('.content').empty();
+                    $('.content').append(div);
+                    $('#buzzer-deck').append(game_card);
+                    $('#buzzer-deck').append(team_card);
+                } else {
+                    renderMain();
+>>>>>>> 8403695d09e2277c98ea011548e7fb414f066e82
+                }
+            }
+            function renderBuzzerTeam(team)
+            {
+                if (!team) return;
+                button = '<button class="btn btn-info p-5" type="button">' +
+                        '<div class="h2 mb-0">' +
+                            team.name +
+                        '</div>' +
+                    '</button>';
+                $('#buzzer-team').append(button);
+
+                $("#audio-correct")[0].play();
             }
 
             function renderBuzzer()

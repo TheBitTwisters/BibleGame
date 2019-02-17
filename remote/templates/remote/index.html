@@ -2,7 +2,11 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+<<<<<<< HEAD
         <title>Bible Game Remote</title>
+=======
+        <title>Bible Game Monitor</title>
+>>>>>>> 8403695d09e2277c98ea011548e7fb414f066e82
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% load staticfiles %}
@@ -32,6 +36,10 @@
                     type: 'post',
                     datatype: 'json',
                     success: function(server_data) {
+<<<<<<< HEAD
+=======
+                        console.log(JSON.stringify(server_data));
+>>>>>>> 8403695d09e2277c98ea011548e7fb414f066e82
                         if (server_data.game) {
                             data.game = server_data.game;
                             data.teams = server_data.teams;
